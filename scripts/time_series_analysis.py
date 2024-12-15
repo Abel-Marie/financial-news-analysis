@@ -4,6 +4,20 @@ import seaborn as sns
 from statsmodels.tsa.seasonal import seasonal_decompose
 import numpy as np
 
+def parse_dates(df):
+    """
+    Ensures proper parsing of the 'date' column, handling mixed or inconsistent formats.
+    Args:
+        df (pd.DataFrame): DataFrame containing 'date' column.
+    Returns:
+        pd.DataFrame: DataFrame with parsed 'date' column.
+    """
+    # Attempt to parse dates robustly
+    df['date'] = pd.to_datetime(df['date'], errors='coerce')
+    if df['date'].isnull().any():
+        print("Warning: Some dates could not be parsed and will be excluded from the analysis.")
+    return df.dropna(subset=['date'])
+
 def publication_frequency_analysis(df, freq='D', highlight_events=None):
     """
     Analyzes publication frequency over time and identifies spikes.
@@ -12,7 +26,8 @@ def publication_frequency_analysis(df, freq='D', highlight_events=None):
         freq (str): Frequency for resampling ('D' for daily, 'W' for weekly, 'M' for monthly).
         highlight_events (dict): Optional dictionary of {date: event} for marking specific events.
     """
-    df['publication_date'] = pd.to_datetime(df['date']).dt.date
+    df = parse_dates(df)
+    df['publication_date'] = df['date'].dt.date
     publication_counts = df['publication_date'].value_counts().sort_index()
 
     # Resample publication frequency
@@ -41,7 +56,8 @@ def stl_decomposition(df, freq=30):
         df (pd.DataFrame): DataFrame containing 'date' column.
         freq (int): Seasonality period for STL decomposition.
     """
-    df['publication_date'] = pd.to_datetime(df['date']).dt.date
+    df = parse_dates(df)
+    df['publication_date'] = df['date'].dt.date
     publication_counts = df['publication_date'].value_counts().sort_index()
 
     # Perform STL decomposition
@@ -56,7 +72,8 @@ def time_of_day_analysis(df):
     Args:
         df (pd.DataFrame): DataFrame containing 'date' column.
     """
-    df['hour'] = pd.to_datetime(df['date']).dt.hour
+    df = parse_dates(df)
+    df['hour'] = df['date'].dt.hour
 
     # Create a heatmap for hourly publication frequency
     hour_counts = df['hour'].value_counts().sort_index()
@@ -76,7 +93,8 @@ def moving_average_analysis(df, window=7):
         df (pd.DataFrame): DataFrame containing 'date' column.
         window (int): Window size for the moving average.
     """
-    df['publication_date'] = pd.to_datetime(df['date']).dt.date
+    df = parse_dates(df)
+    df['publication_date'] = df['date'].dt.date
     publication_counts = df['publication_date'].value_counts().sort_index()
 
     # Calculate moving average
@@ -98,7 +116,8 @@ def weekday_analysis(df):
     Args:
         df (pd.DataFrame): DataFrame containing 'date' column.
     """
-    df['weekday'] = pd.to_datetime(df['date']).dt.day_name()
+    df = parse_dates(df)
+    df['weekday'] = df['date'].dt.day_name()
 
     # Aggregate counts by day of the week
     weekday_counts = df['weekday'].value_counts()
