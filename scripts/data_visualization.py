@@ -40,3 +40,50 @@ def plot_macd(df, stock_name):
     plt.title(f"{stock_name} MACD and Signal Line")
     plt.legend()
     plt.show()
+
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def plot_stock_trends(df):
+    """
+    Plots closing price trends for each stock.
+    Args:
+        df (pd.DataFrame): Combined stock DataFrame.
+    """
+    plt.figure(figsize=(14, 7))
+    for stock in df['Stock'].unique():
+        subset = df[df['Stock'] == stock]
+        plt.plot(subset['Date'], subset['Close'], label=stock)
+    plt.title('Stock Closing Prices Over Time')
+    plt.xlabel('Date')
+    plt.ylabel('Close Price')
+    plt.legend()
+    plt.show()
+
+def plot_volume_trends(df):
+    """
+    Plots trading volume trends for each stock.
+    Args:
+        df (pd.DataFrame): Combined stock DataFrame.
+    """
+    plt.figure(figsize=(14, 7))
+    for stock in df['Stock'].unique():
+        subset = df[df['Stock'] == stock]
+        plt.plot(subset['Date'], subset['Volume'], label=stock)
+    plt.title('Trading Volume Over Time')
+    plt.xlabel('Date')
+    plt.ylabel('Volume')
+    plt.legend()
+    plt.show()
+
+def plot_boxplot(df):
+    """
+    Plots boxplots to identify outliers in the stock prices.
+    Args:
+        df (pd.DataFrame): Combined stock DataFrame.
+    """
+    plt.figure(figsize=(12, 6))
+    sns.boxplot(x='Stock', y='Close', data=df)
+    plt.title('Closing Price Boxplot for Each Stock')
+    plt.show()
