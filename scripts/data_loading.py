@@ -19,24 +19,35 @@ def load_csv(file_path: str) -> pd.DataFrame:
         print(f"Error loading file {file_path}: {e}")
         return pd.DataFrame()
 
-def load_yfinance_data(folder_path: str) -> dict:
-    """
-    Load multiple CSV files from a folder containing YFinance data.
 
+def load_yfinance_data(directory_path):
+    """
+    Load multiple CSV files from a directory into a single DataFrame.
     Args:
-        folder_path (str): Path to the folder.
-
+        directory_path (str): The path to the directory containing the CSV files.
     Returns:
-        dict: A dictionary where keys are stock names and values are DataFrames.
+        pd.DataFrame: A combined DataFrame with a 'Stock' column indicating the stock ticker.
     """
-    data_dict = {}
-    try:
-        for file in os.listdir(folder_path):
-            if file.endswith('.csv'):
-                stock_name = os.path.splitext(file)[0]
-                file_path = os.path.join(folder_path, file)
-                data_dict[stock_name] = pd.read_csv(file_path)
-                print(f"Loaded {stock_name} data. Shape: {data_dict[stock_name].shape}")
-    except Exception as e:
-        print(f"Error loading data from folder {folder_path}: {e}")
-    return data_dict
+    all_data = []  
+    file_names = os.listdir(directory_path)
+
+    for file_name in file_names:
+        if file_name.endswith('.csv'):  
+            try:
+                
+                stock_name = file_name.split('_')[0].upper()
+                file_path = os.path.join(directory_path, file_name)
+                
+                # Load the file
+                df = pd.read_csv(file_path)
+                df['Stock'] = stock_name  
+                all_data.append(df)  
+            except Exception as e:
+                print(f"Error loading file {file_name}: {e}")
+
+    
+    if all_data:
+        combined_df = pd.concat(all_data, ignore_index=True)
+        return combined_df
+    else:
+        raise ValueError("No CSV files found or failed to load.")
