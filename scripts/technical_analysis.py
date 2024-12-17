@@ -2,14 +2,26 @@ import talib
 
 def add_technical_indicators(df):
     """
-    Adds technical indicators (SMA, RSI, MACD) to a stock DataFrame.
+    Add technical indicators to the stock data using TA-Lib.
     Args:
-        df (pd.DataFrame): DataFrame containing stock price data with 'Close' column.
+        df (pd.DataFrame): Preprocessed stock DataFrame.
     Returns:
-        pd.DataFrame: DataFrame with added indicator columns.
+        pd.DataFrame: Stock DataFrame with technical indicators.
     """
-    df['SMA_50'] = talib.SMA(df['Close'], timeperiod=50)
-    df['SMA_200'] = talib.SMA(df['Close'], timeperiod=200)
-    df['RSI'] = talib.RSI(df['Close'], timeperiod=14)
-    df['MACD'], df['MACD_signal'], _ = talib.MACD(df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)
-    return df
+    indicators = []
+    for stock in df['Stock'].unique():
+        subset = df[df['Stock'] == stock].copy()
+
+        # Moving Averages
+        subset['SMA_10'] = talib.SMA(subset['Close'], timeperiod=10)
+        subset['SMA_50'] = talib.SMA(subset['Close'], timeperiod=50)
+
+        # Relative Strength Index (RSI)
+        subset['RSI'] = talib.RSI(subset['Close'], timeperiod=14)
+
+        # Moving Average Convergence Divergence (MACD)
+        subset['MACD'], subset['MACD_Signal'], _ = talib.MACD(subset['Close'], fastperiod=12, slowperiod=26, signalperiod=9)
+
+        indicators.append(subset)
+    
+    return pd.concat(indicators)
