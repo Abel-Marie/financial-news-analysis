@@ -130,3 +130,6 @@ def weekday_analysis(df):
     plt.xlabel("Day of the Week")
     plt.ylabel("Number of Articles")
     plt.show()
+    
+    
+    

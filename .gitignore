@@ -1,1 +1,10 @@
+# Virtual Enviroment
 myenv/
+# VSCode settings
+.vscode/
+
+# Jupyter Notebooks checkpoints
+.ipynb_checkpoints/
+
+# System files
+.DS_Store
